@@ -6,15 +6,6 @@ exports.createTransaction = async (req, res) => {
       const transaction =
         await Transaction.create(req.body);
   
-      await User.findByIdAndUpdate(
-        transaction.belongsTo,
-        {
-          $push: {
-            transactions: transaction._id,
-          },
-        }
-      );
-  
       res.status(201).json({
         success: true,
         data: transaction,
@@ -46,62 +37,65 @@ exports.createTransaction = async (req, res) => {
     }
 };
 
-exports.getAllTransactionsByUser = async (req, res) => {
+exports.getAllTransactionsByUser = async (
+    req,
+    res
+  ) => {
     try {
-        const user = await User.findById(
-            req.params.userId
-        );
-
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: "User not found",
-            });
-        }
-
-        let transactions;
-
-        if (
-            user.username.toLowerCase() ===
-            "ayush"
-        ) {
-            transactions =
-                await Transaction.find()
-                    .populate(
-                        "belongsTo",
-                        "name"
-                    )
-                    .populate(
-                        "createdBy",
-                        "name"
-                    );
-        } else {
-            transactions =
-                await Transaction.find({
-                    createdBy: user._id,
-                })
-                    .populate(
-                        "belongsTo",
-                        "name"
-                    )
-                    .populate(
-                        "createdBy",
-                        "name"
-                    );
-        }
-
-        res.status(200).json({
-            success: true,
-            count: transactions.length,
-            data: transactions,
+      const user = await User.findById(
+        req.params.userId
+      );
+  
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
         });
+      }
+  
+      let transactions;
+  
+      if (
+        user.username.toLowerCase() ===
+        "ayush"
+      ) {
+        transactions =
+          await Transaction.find()
+            .populate(
+              "belongsTo",
+              "name username"
+            )
+            .populate(
+              "createdBy",
+              "name username"
+            );
+      } else {
+        transactions =
+          await Transaction.find({
+            belongsTo: user._id,
+          })
+            .populate(
+              "belongsTo",
+              "name username"
+            )
+            .populate(
+              "createdBy",
+              "name username"
+            );
+      }
+  
+      res.status(200).json({
+        success: true,
+        count: transactions.length,
+        data: transactions,
+      });
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message,
-        });
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
     }
-};
+  };
 
 exports.getTransactionById = async (req, res) => {
     try {

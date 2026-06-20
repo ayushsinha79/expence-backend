@@ -27,7 +27,7 @@ const transactionSchema = new mongoose.Schema(
     source: {
       type: String,
       required: true,
-      lowercase: true,
+      trim: true
     },
 
     // Whose account/card balance is affected
