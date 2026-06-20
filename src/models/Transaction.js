@@ -18,6 +18,13 @@ const transactionSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    
+    transactionType: {
+      type: String,
+      enum: ["DEBIT", "CREDIT"],
+      default: "DEBIT",
+      required: true,
+    },
 
     cashback: {
       type: Number,

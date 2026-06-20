@@ -1,3 +1,5 @@
+const AppConfig = require("../models/AppConfig");
+
 exports.getConfig = async (req, res) => {
     try {
       let config = await AppConfig.findOne();
